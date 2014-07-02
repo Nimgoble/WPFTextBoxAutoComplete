@@ -7,26 +7,26 @@ An attached behavior for WPF's TextBox control that provides auto-completion sug
 
 1. Install the package via NuGet
 
-'''
-	PM> Install-Package WPFTextBoxAutoComplete
-'''
+	```
+		PM> Install-Package WPFTextBoxAutoComplete
+	```
 
 2. Add a reference to the library in your view
 
-'''C#
-	xmlns:behaviors="clr-namespace:WPFTextboxAutoComplete;assembly=WPFTextboxAutoComplete"
-'''
+	``` csharp
+		xmlns:behaviors="clr-namespace:WPFTextboxAutoComplete;assembly=WPFTextboxAutoComplete"
+	```
 	
-3. Create a textbox and bind the "AutoCompleteItemsSource" to a collection if IEnumerable<String>
+3. Create a textbox and bind the "AutoCompleteItemsSource" to a collection of ```IEnumerable<String>```
 
-'''C#
-	<TextBox 
-        Width="250"
-        HorizontalAlignment="Center"
-        Text="{Binding TestText, UpdateSourceTrigger=PropertyChanged}" 
-        behaviors:AutoCompleteBehavior.AutoCompleteItemsSource="{Binding TestItems}" 
-    />
-'''
+	``` csharp
+		<TextBox 
+			Width="250"
+			HorizontalAlignment="Center"
+			Text="{Binding TestText, UpdateSourceTrigger=PropertyChanged}" 
+			behaviors:AutoCompleteBehavior.AutoCompleteItemsSource="{Binding TestItems}" 
+		/>
+	```
     
 Now, every time the "TestText" property of your datacontext is changed, WPFTextBoxAutoComplete will provide you with auto-completion suggestions.  To accept a suggestion, just hit "enter".
 
