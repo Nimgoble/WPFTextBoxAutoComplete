@@ -14,7 +14,7 @@ An attached behavior for WPF's TextBox control that provides auto-completion sug
 2. Add a reference to the library in your view
 
 	``` csharp
-		xmlns:behaviors="clr-namespace:WPFTextboxAutoComplete;assembly=WPFTextboxAutoComplete"
+		xmlns:behaviors="clr-namespace:WPFTextBoxAutoComplete;assembly=WPFTextBoxAutoComplete"
 	```
 	
 3. Create a textbox and bind the "AutoCompleteItemsSource" to a collection of ```IEnumerable<String>```
