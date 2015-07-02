@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -12,6 +14,9 @@ namespace WPFTextBoxAutoComplete
     {
         private static TextChangedEventHandler onTextChanged = new TextChangedEventHandler(OnTextChanged);
         private static KeyEventHandler onKeyDown = new KeyEventHandler(OnPreviewKeyDown);
+		/// <summary>
+		/// The collection to search for matches from.
+		/// </summary>
         public static readonly DependencyProperty AutoCompleteItemsSource =
             DependencyProperty.RegisterAttached
             (
@@ -20,8 +25,20 @@ namespace WPFTextBoxAutoComplete
                 typeof(AutoCompleteBehavior),
                 new UIPropertyMetadata(null, OnAutoCompleteItemsSource)
             );
+		/// <summary>
+		/// Whether or not to ignore case when searching for matches.
+		/// </summary>
+		public static readonly DependencyProperty AutoCompleteStringComparison =
+			DependencyProperty.RegisterAttached
+			(
+				"AutoCompleteStringComparison",
+				typeof(StringComparison),
+				typeof(AutoCompleteBehavior),
+				new UIPropertyMetadata(StringComparison.Ordinal)
+			);
 
-        public static IEnumerable<String> GetAutoCompleteItemsSource(DependencyObject obj)
+		#region Items Source
+		public static IEnumerable<String> GetAutoCompleteItemsSource(DependencyObject obj)
         {
             object objRtn = obj.GetValue(AutoCompleteItemsSource);
             if (objRtn is IEnumerable<String>)
@@ -41,6 +58,7 @@ namespace WPFTextBoxAutoComplete
             if (sender == null)
                 return;
 
+			//If we're being removed, remove the callbacks
             if (e.NewValue == null)
             {
                 tb.TextChanged -= onTextChanged;
@@ -48,13 +66,31 @@ namespace WPFTextBoxAutoComplete
             }
             else
             {
+				//New source.  Add the callbacks
                 tb.TextChanged += onTextChanged;
                 tb.PreviewKeyDown += onKeyDown;
             }
-
         }
+		#endregion
 
-        static void OnPreviewKeyDown(object sender, KeyEventArgs e)
+		#region String Comparison
+		public static StringComparison GetAutoCompleteStringComparison(DependencyObject obj) 
+		{
+			return (StringComparison)obj.GetValue(AutoCompleteStringComparison);
+		}
+
+		public static void SetAutoCompleteStringComparison(DependencyObject obj, StringComparison value) 
+		{
+			obj.SetValue(AutoCompleteStringComparison, value);
+		}
+		#endregion
+
+		/// <summary>
+		/// Used for moving the caret to the end of the suggested auto-completion text.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		static void OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Enter)
                 return;
@@ -71,12 +107,17 @@ namespace WPFTextBoxAutoComplete
             }
         }
 
+		/// <summary>
+		/// Search for auto-completion suggestions.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
         static void OnTextChanged(object sender, TextChangedEventArgs e)
         {
             if
             (
-                (from change in e.Changes where change.RemovedLength > 0 select change).Count() > 0 &&
-                (from change in e.Changes where change.AddedLength > 0 select change).Count() <= 0
+                (from change in e.Changes where change.RemovedLength > 0 select change).Any() &&
+                (from change in e.Changes where change.AddedLength > 0 select change).Any() == false
             )
                 return;
 
@@ -95,26 +136,27 @@ namespace WPFTextBoxAutoComplete
 
             Int32 textLength = tb.Text.Length;
 
+			StringComparison comparer = GetAutoCompleteIgnoreCase(tb);
             //Do search and changes here.
-            IEnumerable<String> matches =
-                from
-                    value
-                in
-                    (
-                        from subvalue
-                        in values
-                        where subvalue.Length >= textLength
-                        select subvalue
-                    )
-                where value.Substring(0, textLength) == tb.Text
-                select value;
+			String match =
+			(
+				from
+					value
+				in
+				(
+					from subvalue
+					in values
+					where subvalue.Length >= textLength
+					select subvalue
+				)
+				where value.Substring(0, textLength).Equals(tb.Text, comparer)
+				select value
+			).FirstOrDefault();
 
             //Nothing.  Leave 'em alone
-            if (matches.Count() == 0)
-                return;
+			if (String.IsNullOrEmpty(match))
+				return;
 
-            String match = matches.ElementAt(0);
-            //String remainder = match.Substring(textLength, (match.Length - textLength));
             tb.TextChanged -= onTextChanged;
             tb.Text = match;
             tb.CaretIndex = textLength;
