@@ -136,7 +136,7 @@ namespace WPFTextBoxAutoComplete
 
             Int32 textLength = tb.Text.Length;
 
-			StringComparison comparer = GetAutoCompleteIgnoreCase(tb);
+			StringComparison comparer = GetAutoCompleteStringComparison(tb);
             //Do search and changes here.
 			String match =
 			(
