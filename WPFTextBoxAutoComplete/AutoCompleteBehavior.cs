@@ -13,7 +13,7 @@ namespace WPFTextBoxAutoComplete
     public static class AutoCompleteBehavior
     {
         private static TextChangedEventHandler onTextChanged = new TextChangedEventHandler(OnTextChanged);
-        private static KeyEventHandler ddonKeyDown = new KeyEventHandler(OnPreviewKeyDown);
+        private static KeyEventHandler onKeyDown = new KeyEventHandler(OnPreviewKeyDown);
         private static bool _isSubscribed = false;
         
 		/// <summary>
