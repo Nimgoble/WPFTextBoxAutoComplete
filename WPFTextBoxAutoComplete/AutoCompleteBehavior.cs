@@ -13,7 +13,9 @@ namespace WPFTextBoxAutoComplete
     public static class AutoCompleteBehavior
     {
         private static TextChangedEventHandler onTextChanged = new TextChangedEventHandler(OnTextChanged);
-        private static KeyEventHandler onKeyDown = new KeyEventHandler(OnPreviewKeyDown);
+        private static KeyEventHandler ddonKeyDown = new KeyEventHandler(OnPreviewKeyDown);
+        private static bool _isSubscribed = false;
+        
 		/// <summary>
 		/// The collection to search for matches from.
 		/// </summary>
@@ -58,17 +60,25 @@ namespace WPFTextBoxAutoComplete
             if (sender == null)
                 return;
 
-			//If we're being removed, remove the callbacks
+		//If we're being removed, remove the callbacks
             if (e.NewValue == null)
             {
-                tb.TextChanged -= onTextChanged;
-                tb.PreviewKeyDown -= onKeyDown;
+                if (_isSubscribed)
+                {
+                    tb.TextChanged -= onTextChanged;
+                    tb.PreviewKeyDown -= onKeyDown;
+                    _isSubscribed = false;
+                }
             }
             else
             {
-				//New source.  Add the callbacks
-                tb.TextChanged += onTextChanged;
-                tb.PreviewKeyDown += onKeyDown;
+		//New source.  Add the callbacks
+                if (!_isSubscribed)
+                {
+                    tb.TextChanged += onTextChanged;
+                    tb.PreviewKeyDown += onKeyDown;
+                    _isSubscribed = true;
+                }
             }
         }
 		#endregion
