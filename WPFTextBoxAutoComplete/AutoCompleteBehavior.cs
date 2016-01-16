@@ -60,25 +60,19 @@ namespace WPFTextBoxAutoComplete
             if (sender == null)
                 return;
 
-		//If we're being removed, remove the callbacks
-            if (e.NewValue == null)
+			//If we're being removed, remove the callbacks
+            if (e.NewValue == null && _isSubscribed)
             {
-                if (_isSubscribed)
-                {
-                    tb.TextChanged -= onTextChanged;
-                    tb.PreviewKeyDown -= onKeyDown;
-                    _isSubscribed = false;
-                }
+                tb.TextChanged -= onTextChanged;
+                tb.PreviewKeyDown -= onKeyDown;
+                _isSubscribed = false;
             }
-            else
+            else if (!_isSubscribed)
             {
-		//New source.  Add the callbacks
-                if (!_isSubscribed)
-                {
-                    tb.TextChanged += onTextChanged;
-                    tb.PreviewKeyDown += onKeyDown;
-                    _isSubscribed = true;
-                }
+				//New source.  Add the callbacks
+                tb.TextChanged += onTextChanged;
+                tb.PreviewKeyDown += onKeyDown;
+                _isSubscribed = true;
             }
         }
 		#endregion
