@@ -14,6 +14,8 @@ namespace WPFTextBoxAutoComplete
     {
         private static TextChangedEventHandler onTextChanged = new TextChangedEventHandler(OnTextChanged);
         private static KeyEventHandler onKeyDown = new KeyEventHandler(OnPreviewKeyDown);
+        private static bool _isSubscribed = false;
+        
 		/// <summary>
 		/// The collection to search for matches from.
 		/// </summary>
@@ -59,16 +61,18 @@ namespace WPFTextBoxAutoComplete
                 return;
 
 			//If we're being removed, remove the callbacks
-            if (e.NewValue == null)
+            if (e.NewValue == null && _isSubscribed)
             {
                 tb.TextChanged -= onTextChanged;
                 tb.PreviewKeyDown -= onKeyDown;
+                _isSubscribed = false;
             }
-            else
+            else if (!_isSubscribed)
             {
 				//New source.  Add the callbacks
                 tb.TextChanged += onTextChanged;
                 tb.PreviewKeyDown += onKeyDown;
+                _isSubscribed = true;
             }
         }
 		#endregion
