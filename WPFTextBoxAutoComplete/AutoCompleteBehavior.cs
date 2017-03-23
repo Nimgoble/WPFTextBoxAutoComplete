@@ -150,7 +150,7 @@ namespace WPFTextBoxAutoComplete
 				(
 					from subvalue
 					in values
-					where subvalue.Length >= textLength
+					where subvalue != null && subvalue.Length >= textLength
 					select subvalue
 				)
 				where value.Substring(0, textLength).Equals(tb.Text, comparer)
