@@ -1,7 +1,11 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPFTextBoxAutoComplete", "WPFTextBoxAutoComplete\WPFTextBoxAutoComplete.csproj", "{CA669F4C-806B-481B-98E4-CCE97A978131}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "TestApp\TestApp.csproj", "{01806ADC-7651-4679-BEAF-207C72BC65ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,6 +17,10 @@ Global
 		{CA669F4C-806B-481B-98E4-CCE97A978131}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA669F4C-806B-481B-98E4-CCE97A978131}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA669F4C-806B-481B-98E4-CCE97A978131}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01806ADC-7651-4679-BEAF-207C72BC65ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01806ADC-7651-4679-BEAF-207C72BC65ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01806ADC-7651-4679-BEAF-207C72BC65ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01806ADC-7651-4679-BEAF-207C72BC65ED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
