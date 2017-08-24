@@ -17,7 +17,7 @@
         </Grid.RowDefinitions>
         <Label>Hello World</Label>
         <TextBox Grid.Row="1" behaviors:AutoCompleteBehavior.AutoCompleteItemsSource="{Binding TestItems}" 
-                 behaviors:AutoCompleteBehavior.AutoCompleteTriggerString="@" />
+                 behaviors:AutoCompleteBehavior.AutoCompleteIndicator="@" />
         <TextBox Grid.Row="2" behaviors:AutoCompleteBehavior.AutoCompleteItemsSource="{Binding TestItems}" />
     </Grid>
 </UserControl>
