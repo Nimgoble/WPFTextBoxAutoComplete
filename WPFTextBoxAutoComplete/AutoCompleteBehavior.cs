@@ -38,8 +38,21 @@ namespace WPFTextBoxAutoComplete
 				new UIPropertyMetadata(StringComparison.Ordinal)
 			);
 
-		#region Items Source
-		public static IEnumerable<String> GetAutoCompleteItemsSource(DependencyObject obj)
+        /// <summary>
+		/// What string should trigger the auto-completion suggestions.  For example: @
+        /// If this is null or empty, auto-completion suggestions will begin at the beginning of the textbox's text.
+		/// </summary>
+		public static readonly DependencyProperty AutoCompleteTriggerString =
+            DependencyProperty.RegisterAttached
+            (
+                "AutoCompleteTriggerString",
+                typeof(String),
+                typeof(AutoCompleteBehavior),
+                new UIPropertyMetadata(String.Empty)
+            );
+
+        #region Items Source
+        public static IEnumerable<String> GetAutoCompleteItemsSource(DependencyObject obj)
         {
             object objRtn = obj.GetValue(AutoCompleteItemsSource);
             if (objRtn is IEnumerable<String>)
@@ -82,14 +95,26 @@ namespace WPFTextBoxAutoComplete
 		{
 			obj.SetValue(AutoCompleteStringComparison, value);
 		}
-		#endregion
+        #endregion
 
-		/// <summary>
-		/// Used for moving the caret to the end of the suggested auto-completion text.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		static void OnPreviewKeyDown(object sender, KeyEventArgs e)
+        #region Trigger String
+        public static String GetAutoCompleteTriggerString(DependencyObject obj)
+        {
+            return (String)obj.GetValue(AutoCompleteTriggerString);
+        }
+
+        public static void SetAutoCompleteTriggerString(DependencyObject obj, String value)
+        {
+            obj.SetValue(AutoCompleteTriggerString, value);
+        }
+        #endregion
+
+        /// <summary>
+        /// Used for moving the caret to the end of the suggested auto-completion text.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        static void OnPreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Enter)
                 return;
@@ -133,7 +158,27 @@ namespace WPFTextBoxAutoComplete
             if (String.IsNullOrEmpty(tb.Text))
                 return;
 
-            Int32 textLength = tb.Text.Length;
+            string triggerString = GetAutoCompleteTriggerString(tb);
+            int startIndex = 0; //Start from the beginning of the line.
+            string matchingString = tb.Text;
+            //If we have a trigger string, make sure that it has been typed before
+            //giving auto-completion suggestions.
+            if(!String.IsNullOrEmpty(triggerString))
+            {
+                startIndex = tb.Text.LastIndexOf(triggerString);
+                //If we haven't typed the trigger string, then don't do anything.
+                if (startIndex == -1)
+                    return;
+
+                startIndex += triggerString.Length;
+                matchingString = tb.Text.Substring(startIndex, (tb.Text.Length - startIndex));
+            }
+
+            //If we don't have anything after the trigger string, return.
+            if (String.IsNullOrEmpty(matchingString))
+                return;
+
+            Int32 textLength = matchingString.Length;
 
 			StringComparison comparer = GetAutoCompleteStringComparison(tb);
             //Do search and changes here.
@@ -148,19 +193,20 @@ namespace WPFTextBoxAutoComplete
 					where subvalue != null && subvalue.Length >= textLength
 					select subvalue
 				)
-				where value.Substring(0, textLength).Equals(tb.Text, comparer)
-				select value
+				where value.Substring(0, textLength).Equals(matchingString, comparer)
+				select value.Substring(textLength, value.Length - textLength)/*Only select the last part of the suggestion*/
 			).FirstOrDefault();
 
             //Nothing.  Leave 'em alone
 			if (String.IsNullOrEmpty(match))
 				return;
 
+            int matchStart = (startIndex + matchingString.Length);
             tb.TextChanged -= onTextChanged;
-            tb.Text = match;
-            tb.CaretIndex = textLength;
-            tb.SelectionStart = textLength;
-            tb.SelectionLength = (match.Length - textLength);
+            tb.Text += match;
+            tb.CaretIndex = matchStart;
+            tb.SelectionStart = matchStart;
+            tb.SelectionLength = (tb.Text.Length - startIndex);
             tb.TextChanged += onTextChanged;
         }
     }
