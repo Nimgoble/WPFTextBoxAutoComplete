@@ -39,13 +39,13 @@ namespace WPFTextBoxAutoComplete
 			);
 
         /// <summary>
-		/// What string should trigger the auto-completion suggestions.  For example: @
+		/// What string should indicate that we should start giving auto-completion suggestions.  For example: @
         /// If this is null or empty, auto-completion suggestions will begin at the beginning of the textbox's text.
 		/// </summary>
-		public static readonly DependencyProperty AutoCompleteTriggerString =
+		public static readonly DependencyProperty AutoCompleteIndicator =
             DependencyProperty.RegisterAttached
             (
-                "AutoCompleteTriggerString",
+                "AutoCompleteIndicator",
                 typeof(String),
                 typeof(AutoCompleteBehavior),
                 new UIPropertyMetadata(String.Empty)
@@ -97,15 +97,15 @@ namespace WPFTextBoxAutoComplete
 		}
         #endregion
 
-        #region Trigger String
-        public static String GetAutoCompleteTriggerString(DependencyObject obj)
+        #region Indicator
+        public static String GetAutoCompleteIndicator(DependencyObject obj)
         {
-            return (String)obj.GetValue(AutoCompleteTriggerString);
+            return (String)obj.GetValue(AutoCompleteIndicator);
         }
 
-        public static void SetAutoCompleteTriggerString(DependencyObject obj, String value)
+        public static void SetAutoCompleteIndicator(DependencyObject obj, String value)
         {
-            obj.SetValue(AutoCompleteTriggerString, value);
+            obj.SetValue(AutoCompleteIndicator, value);
         }
         #endregion
 
@@ -158,19 +158,19 @@ namespace WPFTextBoxAutoComplete
             if (String.IsNullOrEmpty(tb.Text))
                 return;
 
-            string triggerString = GetAutoCompleteTriggerString(tb);
+            string indicator = GetAutoCompleteIndicator(tb);
             int startIndex = 0; //Start from the beginning of the line.
             string matchingString = tb.Text;
             //If we have a trigger string, make sure that it has been typed before
             //giving auto-completion suggestions.
-            if(!String.IsNullOrEmpty(triggerString))
+            if(!String.IsNullOrEmpty(indicator))
             {
-                startIndex = tb.Text.LastIndexOf(triggerString);
+                startIndex = tb.Text.LastIndexOf(indicator);
                 //If we haven't typed the trigger string, then don't do anything.
                 if (startIndex == -1)
                     return;
 
-                startIndex += triggerString.Length;
+                startIndex += indicator.Length;
                 matchingString = tb.Text.Substring(startIndex, (tb.Text.Length - startIndex));
             }
 
